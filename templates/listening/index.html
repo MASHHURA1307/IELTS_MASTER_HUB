@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Listening Practice — IELTS Master Hub{% endblock %}
+{% block page_title %}IELTS Listening Amaliyoti{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h4 class="fw-bold">Listening Audio Testlar</h4>
+        <p class="text-muted small">Haqiqiy IELTS audio fayllarini eshiting, javoblarni to'ldiring va eshitib tushunishni oshiring</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% for test in tests %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card card-glass border-0 shadow-sm rounded-4 h-100 p-3 hover-lift">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="badge bg-success-subtle text-success rounded-pill px-3">
+                    <i class="bi bi-headphones me-1"></i> Section {{ test.section or 1 }}
+                </span>
+                <span class="text-muted small"><i class="bi bi-clock me-1"></i> {{ test.duration or '10:00' }}</span>
+            </div>
+
+            <h5 class="fw-bold mb-2">{{ test.title }}</h5>
+            <p class="text-muted small flex-grow-1">{{ test.description or "IELTS formatidagi audio mashq." }}</p>
+
+            <div class="d-flex align-items-center justify-content-between pt-3 border-top mt-2">
+                <span class="small text-muted"><i class="bi bi-question-circle me-1"></i> {{ test.questions|length }} ta savol</span>
+                
+                {% if str(test._id) in completed_ids %}
+                <a href="{{ url_for('listening.test_detail', test_id=test._id) }}" class="btn btn-outline-success btn-sm rounded-pill">
+                    <i class="bi bi-check-circle-fill me-1"></i> Qayta eshitish
+                </a>
+                {% else %}
+                <a href="{{ url_for('listening.test_detail', test_id=test._id) }}" class="btn btn-success btn-sm rounded-pill">
+                    Boshlash <i class="bi bi-play-circle-fill ms-1"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+        <i class="bi bi-headphones text-muted display-1"></i>
+        <h5 class="mt-3 text-muted">Hozircha listening mashqlari topilmadi</h5>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}{{ test.title }} — Listening Test{% endblock %}
+{% block page_title %}{{ test.title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Audio Player Sticky Card -->
+        <div class="card card-glass border-0 shadow-lg rounded-4 p-4 mb-4 sticky-top" style="top: 70px; z-index: 100;">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-success text-white rounded-pill px-3">Listening Section {{ test.section or 1 }}</span>
+                    <h5 class="fw-bold m-0">{{ test.title }}</h5>
+                </div>
+                <button type="button" class="btn btn-outline-info btn-sm rounded-pill" data-bs-toggle="collapse" data-bs-target="#transcriptCollapse">
+                    <i class="bi bi-file-text me-1"></i> Transkript
+                </button>
+            </div>
+
+            <!-- Native Audio Player -->
+            <audio controls class="w-100 rounded-pill shadow-sm" id="audioPlayer">
+                <source src="{{ test.audio_url or 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' }}" type="audio/mpeg">
+                Brauzeringiz audio pleerni qo'llab-quvvatlamaydi.
+            </audio>
+
+            <!-- Collapsible Audio Transcript -->
+            <div class="collapse mt-3" id="transcriptCollapse">
+                <div class="p-3 bg-body-tertiary rounded-3 border text-muted small lh-lg">
+                    <strong>Audio Transkripti:</strong><br>
+                    {{ test.transcript or "Audio yozuvi suhbati bu yerda ko'rsatiladi." }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions Form -->
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-4">
+            <h5 class="fw-bold border-bottom pb-3 mb-4">Savollar (1 - {{ test.questions|length }})</h5>
+
+            <form action="{{ url_for('listening.submit_test', test_id=test._id) }}" method="POST">
+                {% for q in test.questions %}
+                <div class="question-card mb-4 p-3 bg-body rounded-3 border">
+                    <div class="fw-bold mb-2">Q{{ loop.index }}. {{ q.question }}</div>
+                    
+                    {% if q.type == 'multiple_choice' %}
+                        {% for opt in q.options %}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="question_{{ q.id }}" id="l_q_{{ q.id }}_{{ loop.index }}" value="{{ opt }}">
+                            <label class="form-check-label" for="l_q_{{ q.id }}_{{ loop.index }}">
+                                {{ opt }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <input type="text" name="question_{{ q.id }}" class="form-control mt-2" placeholder="Tushirib qoldirilgan so'zni yozing...">
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill mt-3">
+                    Topshirish va Natijani Ko'rish <i class="bi bi-send-fill ms-1"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

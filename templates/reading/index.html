@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Reading Practice — IELTS Master Hub{% endblock %}
+{% block page_title %}IELTS Reading Amaliyoti{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h4 class="fw-bold">Reading Matnlari va Testlar</h4>
+        <p class="text-muted small">IELTS formatidagi matnlarni o'qing, savollarga javob bering va darajangizni aniqlang</p>
+    </div>
+    
+    <!-- Difficulty Filter -->
+    <div class="btn-group rounded-pill p-1 bg-body-tertiary">
+        <a href="{{ url_for('reading.index', difficulty='all') }}" class="btn btn-sm rounded-pill {% if current_diff == 'all' %}btn-primary{% else %}btn-link text-body text-decoration-none{% endif %}">Barchasi</a>
+        <a href="{{ url_for('reading.index', difficulty='Easy') }}" class="btn btn-sm rounded-pill {% if current_diff == 'Easy' %}btn-success{% else %}btn-link text-body text-decoration-none{% endif %}">Oson (Easy)</a>
+        <a href="{{ url_for('reading.index', difficulty='Medium') }}" class="btn btn-sm rounded-pill {% if current_diff == 'Medium' %}btn-warning{% else %}btn-link text-body text-decoration-none{% endif %}">O'rta (Medium)</a>
+        <a href="{{ url_for('reading.index', difficulty='Hard') }}" class="btn btn-sm rounded-pill {% if current_diff == 'Hard' %}btn-danger{% else %}btn-link text-body text-decoration-none{% endif %}">Qiyin (Hard)</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% for test in tests %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card card-glass border-0 shadow-sm rounded-4 h-100 p-3 hover-lift position-relative">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="badge {% if test.difficulty == 'Easy' %}bg-success-subtle text-success{% elif test.difficulty == 'Medium' %}bg-warning-subtle text-warning{% else %}bg-danger-subtle text-danger{% endif %} rounded-pill px-3">
+                    {{ test.difficulty or 'Medium' }}
+                </span>
+                <span class="text-muted small"><i class="bi bi-clock me-1"></i> {{ test.time_limit or 20 }} daqiqa</span>
+            </div>
+
+            <h5 class="fw-bold mb-2">{{ test.title }}</h5>
+            <p class="text-muted small flex-grow-1">{{ test.passage_text[:120] }}...</p>
+
+            <div class="d-flex align-items-center justify-content-between pt-3 border-top mt-2">
+                <span class="small text-muted"><i class="bi bi-question-circle me-1"></i> {{ test.questions|length }} ta savol</span>
+                
+                {% if str(test._id) in completed_ids %}
+                <a href="{{ url_for('reading.test_detail', test_id=test._id) }}" class="btn btn-outline-success btn-sm rounded-pill">
+                    <i class="bi bi-check-circle-fill me-1"></i> Qayta topshirish
+                </a>
+                {% else %}
+                <a href="{{ url_for('reading.test_detail', test_id=test._id) }}" class="btn btn-primary btn-sm rounded-pill">
+                    Boshlash <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+        <i class="bi bi-book text-muted display-1"></i>
+        <h5 class="mt-3 text-muted">Hozircha o'qish matnlari topilmadi</h5>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

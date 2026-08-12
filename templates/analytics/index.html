@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Analitika — IELTS Master Hub{% endblock %}
+{% block page_title %}Mening Natijalarim va Analitika{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-3 text-center">
+            <span class="text-muted small">Jami Yechilgan Testlar</span>
+            <h2 class="display-6 fw-bold text-primary my-1">{{ total_tests }}</h2>
+            <small class="text-muted">Barcha bo'limlar bo'yicha</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-3 text-center">
+            <span class="text-muted small">Reading Testlar</span>
+            <h2 class="display-6 fw-bold text-success my-1">{{ r_count }}</h2>
+            <small class="text-muted">Topshirilgan</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-3 text-center">
+            <span class="text-muted small">Writing Insholar</span>
+            <h2 class="display-6 fw-bold text-warning my-1">{{ w_count }}</h2>
+            <small class="text-muted">AI baholagan</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-3 text-center">
+            <span class="text-muted small">Aniq Aniqlik Darajasi</span>
+            <h2 class="display-6 fw-bold text-info my-1">{{ avg_accuracy }}%</h2>
+            <small class="text-muted">To'g'ri javoblar ulushi</small>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-pie-chart-fill me-2 text-primary"></i> Ko'nikmalar Bo'yicha Diagramma</h5>
+            <div style="position: relative; height: 300px;">
+                <canvas id="skillsRadarChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-shield-check me-2 text-success"></i> Kuchli va Kuchsiz Bo'limlar</h5>
+            
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="fw-bold">Listening & Audio Comprehension</span>
+                    <span class="text-success fw-bold">85% (Kuchli)</span>
+                </div>
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-success" style="width: 85%;"></div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="fw-bold">Academic Vocabulary (AWL)</span>
+                    <span class="text-primary fw-bold">78%</span>
+                </div>
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-primary" style="width: 78%;"></div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <span class="fw-bold">Writing Task 2 Essay Structure</span>
+                    <span class="text-warning fw-bold">62% (Kuchsiz soha)</span>
+                </div>
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-warning" style="width: 62%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const ctx = document.getElementById('skillsRadarChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Listening', 'Reading', 'Writing', 'Speaking', 'Grammar', 'Vocabulary'],
+            datasets: [{
+                label: 'Sizning Ko'nikmangiz (Band)',
+                data: [6.5, 7.0, 6.0, 6.5, 7.5, 7.0],
+                backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                borderColor: '#4f46e5',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>
+{% endblock %}

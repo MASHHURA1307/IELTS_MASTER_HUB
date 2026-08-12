@@ -1,0 +1,17 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
+
+class Config:
+    SECRET_KEY = os.getenv("SECRET_KEY", "ielts_master_hub_default_secret_key")
+    MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/ielts_master_hub")
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+    
+    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+    UPLOAD_FOLDER = os.path.join(BASE_DIR, os.getenv("UPLOAD_FOLDER", "uploads"))
+    REPORT_FOLDER = os.path.join(BASE_DIR, os.getenv("REPORT_FOLDER", "reports"))
+    
+    MAX_CONTENT_LENGTH = int(os.getenv("MAX_CONTENT_LENGTH", 16 * 1024 * 1024)) # 16 MB max
+    ALLOWED_AUDIO_EXTENSIONS = {'mp3', 'wav', 'm4a', 'ogg', 'webm'}
+    ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'svg'}

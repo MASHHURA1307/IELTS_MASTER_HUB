@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}IELTS Mock Exam — IELTS Master Hub{% endblock %}
+{% block page_title %}Full IELTS Simulation Mock Exam{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h4 class="fw-bold">Haqiqiy IELTS Imtihon Simulyatsiyasi</h4>
+        <p class="text-muted small">Listening, Reading, Writing va Speaking bo'limlarini rasmiy vaqt tartibi bo'yicha to'liq topshiring</p>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-6 col-lg-4">
+        <div class="card card-glass border-0 shadow-lg rounded-4 p-4 text-center border-start border-5 border-primary">
+            <div class="badge bg-primary rounded-pill px-3 py-2 mb-3">Official IELTS Format</div>
+            <h4 class="fw-bold mb-2">IELTS Full Mock Test #1</h4>
+            <p class="text-muted small">4 ta ko'nikma: Listening (30m), Reading (60m), Writing (60m), Speaking (15m)</p>
+
+            <a href="{{ url_for('mock_exam.start_test', mock_id='65c28f1e8a9b1c2d3e4f5a6b') }}" class="btn btn-primary btn-lg rounded-pill w-100 fw-bold mt-3">
+                Mock Exam Boshlash <i class="bi bi-play-circle-fill ms-1"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Past Mock Results Table -->
+<div class="card card-glass border-0 shadow-sm rounded-4 p-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i> Mening Mock Exam Sertifikatlarim va Natijalarim</h5>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Imtihon Nomi</th>
+                    <th>Listening</th>
+                    <th>Reading</th>
+                    <th>Writing</th>
+                    <th>Speaking</th>
+                    <th>Overall Band</th>
+                    <th>Sana</th>
+                    <th>Sertifikat (PDF)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in results %}
+                <tr>
+                    <td class="fw-bold">{{ r.title }}</td>
+                    <td>{{ r.listening_band }}</td>
+                    <td>{{ r.reading_band }}</td>
+                    <td>{{ r.writing_band }}</td>
+                    <td>{{ r.speaking_band }}</td>
+                    <td><span class="badge bg-primary fs-6">Band {{ r.overall_band }}</span></td>
+                    <td class="text-muted small">{{ r.completed_at.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        <a href="{{ url_for('mock_exam.download_pdf', result_id=r._id) }}" class="btn btn-sm btn-outline-danger rounded-pill">
+                            <i class="bi bi-file-earmark-pdf me-1"></i> PDF Yuklab Olish
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center text-muted py-3">Hali mock imtihonlar topshirilmagan. Birinchi simulyatsiyani boshlang!</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

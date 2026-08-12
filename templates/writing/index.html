@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Writing AI Evaluator — IELTS Master Hub{% endblock %}
+{% block page_title %}IELTS Writing AI Tekshiruvchisi{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h4 class="fw-bold">Writing Insho Topshiriqlari (Task 1 & Task 2)</h4>
+        <p class="text-muted small">Insho yozing va Sun'iy Intellektdan rasmiy IELTS mezonlari bo'yicha onlayn baho hamda chuqur tahlil oling</p>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="btn-group rounded-pill p-1 bg-body-tertiary">
+        <a href="{{ url_for('writing.index', type='all') }}" class="btn btn-sm rounded-pill {% if task_type == 'all' %}btn-primary{% else %}btn-link text-body text-decoration-none{% endif %}">Barchasi</a>
+        <a href="{{ url_for('writing.index', type='Task 1') }}" class="btn btn-sm rounded-pill {% if task_type == 'Task 1' %}btn-warning{% else %}btn-link text-body text-decoration-none{% endif %}">Task 1 (Visual)</a>
+        <a href="{{ url_for('writing.index', type='Task 2') }}" class="btn btn-sm rounded-pill {% if task_type == 'Task 2' %}btn-primary{% else %}btn-link text-body text-decoration-none{% endif %}">Task 2 (Essay)</a>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    {% for prompt in prompts %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card card-glass border-0 shadow-sm rounded-4 h-100 p-3 hover-lift">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="badge {% if prompt.task_type == 'Task 1' %}bg-warning-subtle text-warning{% else %}bg-primary-subtle text-primary{% endif %} rounded-pill px-3">
+                    {{ prompt.task_type }}
+                </span>
+                <span class="text-muted small"><i class="bi bi-clock me-1"></i> {% if prompt.task_type == 'Task 1' %}20{% else %}40{% endif %} daqiqa</span>
+            </div>
+
+            <h5 class="fw-bold mb-2">{{ prompt.title }}</h5>
+            <p class="text-muted small flex-grow-1">{{ prompt.prompt_text[:140] }}...</p>
+
+            <div class="pt-3 border-top mt-2">
+                <a href="{{ url_for('writing.test_detail', prompt_id=prompt._id) }}" class="btn btn-warning btn-sm w-100 rounded-pill fw-bold">
+                    Insho Yozishni Boshlash <i class="bi bi-pencil-fill ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+        <i class="bi bi-pencil-square text-muted display-1"></i>
+        <h5 class="mt-3 text-muted">Writing mavzulari topilmadi</h5>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Recent Submissions History -->
+<div class="card card-glass border-0 shadow-sm rounded-4 p-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-history me-2"></i> Mening Oxirgi Topshirgan Insholarim</h5>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Mavzu</th>
+                    <th>Turi</th>
+                    <th>So'z Soni</th>
+                    <th>AI Band Ball</th>
+                    <th>Sana</th>
+                    <th>Harakat</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sub in recent_submissions %}
+                <tr>
+                    <td class="fw-bold">{{ sub.prompt_title }}</td>
+                    <td><span class="badge bg-secondary">{{ sub.task_type }}</span></td>
+                    <td>{{ sub.word_count }} so'z</td>
+                    <td><span class="badge bg-warning text-dark fs-6">Band {{ sub.overall_band }}</span></td>
+                    <td class="text-muted small">{{ sub.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        <a href="{{ url_for('writing.result', submission_id=sub._id) }}" class="btn btn-sm btn-outline-primary rounded-pill">
+                            Tahlilni Ko'rish
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-3">Hali insholar topshirilmagan.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

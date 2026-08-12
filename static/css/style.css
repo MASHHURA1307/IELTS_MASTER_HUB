@@ -1,0 +1,177 @@
+/* IELTS Master Hub Custom Design System */
+:root {
+    --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --secondary-color: #06b6d4;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --dark-bg: #0f172a;
+    --dark-card: #1e293b;
+    --light-bg: #f8fafc;
+    --light-card: #ffffff;
+    --sidebar-width: 270px;
+}
+
+[data-bs-theme="dark"] {
+    --bg-main: var(--dark-bg);
+    --bg-card: var(--dark-card);
+    --text-color: #f8fafc;
+}
+
+[data-bs-theme="light"] {
+    --bg-main: var(--light-bg);
+    --bg-card: var(--light-card);
+    --text-color: #0f172a;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-main);
+    color: var(--text-color);
+    overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* App Wrapper Layout */
+.app-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.app-sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--bg-card);
+    border-right: 1px solid rgba(226, 232, 240, 0.8);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1020;
+    transition: transform 0.3s ease-in-out;
+}
+
+[data-bs-theme="dark"] .app-sidebar {
+    border-right-color: rgba(255, 255, 255, 0.1);
+}
+
+.app-main {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+@media (max-width: 767.98px) {
+    .app-sidebar {
+        transform: translateX(-100%);
+    }
+    .app-sidebar.show {
+        transform: translateX(0);
+    }
+    .app-main {
+        margin-left: 0;
+    }
+}
+
+/* Typography & Gradients */
+.text-gradient {
+    background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+}
+
+.bg-gradient-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #f43f5e 100%);
+}
+
+.fw-extrabold {
+    font-weight: 800;
+}
+
+/* Glassmorphism Cards */
+.card-glass {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    transition: all 0.25s ease-in-out;
+}
+
+[data-bs-theme="dark"] .card-glass {
+    background: rgba(30, 41, 59, 0.85);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Sidebar Nav Links */
+.sidebar-menu .nav-link {
+    color: #64748b;
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 10px 14px;
+    transition: all 0.2s ease;
+}
+
+.sidebar-menu .nav-link:hover {
+    color: var(--primary-color);
+    background-color: rgba(79, 70, 229, 0.08);
+}
+
+.sidebar-menu .nav-link.active {
+    color: #ffffff;
+    background-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+}
+
+/* Buttons & Badges */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+.avatar-img {
+    border: 2px solid var(--primary-color);
+    object-fit: cover;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(100, 116, 139, 0.3);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 116, 139, 0.5);
+}
+
+/* Extra small text */
+.extra-small {
+    font-size: 0.75rem;
+}

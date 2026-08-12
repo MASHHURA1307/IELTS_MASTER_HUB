@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Profilim — IELTS Master Hub{% endblock %}
+{% block page_title %}Mening Profilim va Yutuqlarim{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- User Profile Details Column -->
+    <div class="col-lg-4">
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-4 text-center">
+            <img src="{{ current_user.avatar or 'https://api.dicebear.com/7.x/avataaars/svg?seed=' ~ current_user.email }}" class="rounded-circle mx-auto mb-3 shadow" width="90" height="90">
+            <h4 class="fw-bold mb-1">{{ current_user.full_name }}</h4>
+            <p class="text-muted small mb-3">{{ current_user.email }}</p>
+
+            <div class="d-flex justify-content-center gap-2 mb-4">
+                <span class="badge bg-primary-subtle text-primary border px-3">Target Band {{ current_user.target_band }}</span>
+                <span class="badge bg-warning-subtle text-warning border px-3"><i class="bi bi-fire me-1"></i> Streak {{ current_user.streak }}d</span>
+            </div>
+
+            <form action="{{ url_for('profile.update_profile') }}" method="POST" class="text-start">
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Ism va Familiya</label>
+                    <input type="text" name="full_name" class="form-control" value="{{ current_user.full_name }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold">Maqsad Qilingan IELTS Ball (Target)</label>
+                    <select name="target_band" class="form-select">
+                        <option value="6.5" {% if current_user.target_band == 6.5 %}selected{% endif %}>Band 6.5</option>
+                        <option value="7.0" {% if current_user.target_band == 7.0 %}selected{% endif %}>Band 7.0</option>
+                        <option value="7.5" {% if current_user.target_band == 7.5 %}selected{% endif %}>Band 7.5</option>
+                        <option value="8.0" {% if current_user.target_band == 8.0 %}selected{% endif %}>Band 8.0</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary rounded-pill w-100 fw-bold">Saqlash</button>
+            </form>
+        </div>
+
+        <!-- Password Change Card -->
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-4 mt-4">
+            <h6 class="fw-bold mb-3"><i class="bi bi-key-fill text-warning me-2"></i> Parolni O'zgartirish</h6>
+            <form action="{{ url_for('profile.change_password') }}" method="POST">
+                <div class="mb-3">
+                    <input type="password" name="new_password" class="form-control" placeholder="Yangi parol (kamida 6 belgi)" minlength="6" required>
+                </div>
+                <button type="submit" class="btn btn-outline-warning rounded-pill w-100 fw-bold">Parolni Yangilash</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Achievement Badges Column -->
+    <div class="col-lg-8">
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-4">
+            <h5 class="fw-bold mb-4"><i class="bi bi-award-fill text-warning me-2"></i> Mening Yutuq Nishonlarim (Achievement Badges)</h5>
+
+            <div class="row g-3">
+                {% for b in badges %}
+                <div class="col-md-6">
+                    <div class="p-3 rounded-4 border {% if b.unlocked %}bg-body border-primary-subtle shadow-sm{% else %}bg-body-tertiary opacity-50{% endif %} d-flex align-items-center gap-3">
+                        <div class="badge bg-{{ b.color }} text-white rounded-circle p-3 fs-3">
+                            <i class="bi {{ b.icon }}"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold m-0">{{ b.name }}</h6>
+                            <small class="text-muted d-block">{{ b.desc }}</small>
+                            {% if b.unlocked %}
+                            <span class="badge bg-success-subtle text-success extra-small mt-1"><i class="bi bi-check-circle me-1"></i> Ochilgan</span>
+                            {% else %}
+                            <span class="badge bg-secondary-subtle text-secondary extra-small mt-1"><i class="bi bi-lock me-1"></i> Qulflangan</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

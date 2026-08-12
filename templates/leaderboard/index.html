@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Reyting — IELTS Master Hub{% endblock %}
+{% block page_title %}Talabalar Reytingi va Peshqadamlar (Leaderboard){% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <!-- Leaderboard Tabs -->
+        <ul class="nav nav-pills mb-4 justify-content-center gap-2" id="leaderboardTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active rounded-pill px-4" data-bs-toggle="tab" data-bs-target="#bandTab">
+                    <i class="bi bi-trophy-fill text-warning me-1"></i> Eng Yuqori Band Ball
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link rounded-pill px-4" data-bs-toggle="tab" data-bs-target="#streakTab">
+                    <i class="bi bi-fire text-danger me-1"></i> Eng Uzun Streak
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content">
+            <!-- Band Score Leaders -->
+            <div class="tab-pane fade show active" id="bandTab">
+                <div class="card card-glass border-0 shadow-sm rounded-4 p-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>O'rin</th>
+                                    <th>Talaba Ismi</th>
+                                    <th>Hozirgi Estimated Band</th>
+                                    <th>Maqsad</th>
+                                    <th>Streak</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for u in top_band %}
+                                <tr>
+                                    <td class="fw-bold fs-5">
+                                        {% if loop.index == 1 %}🥇{% elif loop.index == 2 %}🥈{% elif loop.index == 3 %}🥉{% else %}{{ loop.index }}{% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <img src="{{ u.avatar or 'https://api.dicebear.com/7.x/avataaars/svg?seed=' ~ u.email }}" class="rounded-circle" width="36" height="36">
+                                            <span class="fw-bold">{{ u.full_name }}</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-primary text-white fs-6">Band {{ u.current_band or 6.5 }}</span></td>
+                                    <td class="text-muted">Target {{ u.target_band or 7.0 }}</td>
+                                    <td><span class="badge bg-warning-subtle text-warning"><i class="bi bi-fire me-1"></i> {{ u.streak or 1 }} kun</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Streak Leaders -->
+            <div class="tab-pane fade" id="streakTab">
+                <div class="card card-glass border-0 shadow-sm rounded-4 p-4">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>O'rin</th>
+                                    <th>Talaba</th>
+                                    <th>Ketma-ket Kunlar (Streak)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for u in top_streak %}
+                                <tr>
+                                    <td class="fw-bold fs-5">#{{ loop.index }}</td>
+                                    <td class="fw-bold">{{ u.full_name }}</td>
+                                    <td><span class="badge bg-danger fs-6"><i class="bi bi-fire me-1"></i> {{ u.streak }} kun uzluksiz</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

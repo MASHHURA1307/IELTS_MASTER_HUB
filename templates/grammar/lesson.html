@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lesson.title }} — IELTS Grammatika{% endblock %}
+{% block page_title %}{{ lesson.title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <!-- Theory Lesson Card -->
+        <div class="card card-glass border-0 shadow-lg rounded-4 p-4 mb-4">
+            <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
+                <h3 class="fw-bold m-0 text-primary">{{ lesson.title }}</h3>
+                <a href="{{ url_for('grammar.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill"><i class="bi bi-arrow-left me-1"></i> Barcha Darslar</a>
+            </div>
+
+            <!-- Content HTML -->
+            <div class="lesson-theory fs-6 lh-lg mb-4 text-justify">
+                {{ lesson.content_html | safe }}
+            </div>
+
+            <!-- IELTS Examples Box -->
+            <div class="p-4 bg-primary-subtle rounded-4 border border-primary-subtle mb-3">
+                <h6 class="fw-bold text-primary mb-2"><i class="bi bi-lightbulb-fill me-2"></i> IELTS Akademik Misollar:</h6>
+                <ul class="mb-0 ps-3 text-dark small lh-lg">
+                    {% for ex in lesson.examples %}
+                    <li>{{ ex }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Interactive Practice Exercises Card -->
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-4">
+            <h4 class="fw-bold border-bottom pb-3 mb-4"><i class="bi bi-pencil-fill text-success me-2"></i> Mustahkamlash Mashqlari</h4>
+
+            <form id="grammarExerciseForm">
+                {% for ex in lesson.exercises %}
+                <div class="question-card mb-4 p-3 bg-body rounded-3 border">
+                    <div class="fw-bold mb-2">Q{{ loop.index }}. {{ ex.question }}</div>
+                    
+                    {% if ex.options %}
+                        {% for opt in ex.options %}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="ex_{{ ex.id }}" id="opt_{{ ex.id }}_{{ loop.index }}" value="{{ opt }}">
+                            <label class="form-check-label" for="opt_{{ ex.id }}_{{ loop.index }}">
+                                {{ opt }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <input type="text" name="ex_{{ ex.id }}" class="form-control mt-2" placeholder="To'g'ri grammatik shaklini yozing...">
+                    {% endif %}
+
+                    <!-- Feedback Box Container -->
+                    <div class="exercise-feedback mt-2 d-none" id="fb_{{ ex.id }}"></div>
+                </div>
+                {% endfor %}
+
+                <button type="button" class="btn btn-success btn-lg w-100 rounded-pill fw-bold" id="checkAnswersBtn">
+                    Javoblarni Tekshirish <i class="bi bi-check2-all ms-1"></i>
+                </button>
+            </form>
+
+            <div class="alert alert-success mt-4 d-none text-center rounded-4" id="successPassedAlert">
+                <h5 class="fw-bold m-0"><i class="bi bi-trophy-fill me-2"></i> Tabriklaymiz! Ushbu dars muvaffaqiyatli topshirildi va hisobingizga saqlandi!</h5>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('checkAnswersBtn').addEventListener('click', function() {
+        const form = document.getElementById('grammarExerciseForm');
+        const formData = new FormData(form);
+
+        fetch("{{ url_for('grammar.check_exercises', slug=lesson.slug) }}", {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.results) {
+                data.results.forEach(res => {
+                    const fbElem = document.getElementById(`fb_${res.id}`);
+                    fbElem.classList.remove('d-none');
+                    if (res.is_correct) {
+                        fbElem.innerHTML = `<div class="alert alert-success p-2 small m-0"><i class="bi bi-check-circle-fill me-1"></i> To'g'ri! ${res.explanation || ''}</div>`;
+                    } else {
+                        fbElem.innerHTML = `<div class="alert alert-danger p-2 small m-0"><i class="bi bi-x-circle-fill me-1"></i> Noto'g'ri. To'g'ri javob: <strong>${res.correct_answer}</strong>. ${res.explanation || ''}</div>`;
+                    }
+                });
+
+                if (data.is_passed) {
+                    document.getElementById('successPassedAlert').classList.remove('d-none');
+                }
+            }
+        })
+        .catch(err => console.error("Error checking exercises:", err));
+    });
+</script>
+{% endblock %}

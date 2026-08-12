@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Foydalanuvchilar Boshqaruvi — Admin Panel{% endblock %}
+{% block page_title %}Foydalanuvchilar Boshqaruvi{% endblock %}
+
+{% block content %}
+<div class="card card-glass border-0 shadow-sm rounded-4 p-4">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h5 class="fw-bold m-0"><i class="bi bi-people-fill text-primary me-2"></i> Barcha Foydalanuvchilar ({{ users|length }})</h5>
+        <a href="{{ url_for('admin.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill"><i class="bi bi-arrow-left me-1"></i> Admin Dashboard</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Talaba</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Hozirgi Band</th>
+                    <th>Target Band</th>
+                    <th>Obuna Holati</th>
+                    <th>Harakat</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <img src="{{ u.avatar or 'https://api.dicebear.com/7.x/avataaars/svg?seed=' ~ u.email }}" class="rounded-circle" width="36" height="36">
+                            <span class="fw-bold">{{ u.full_name }}</span>
+                        </div>
+                    </td>
+                    <td>{{ u.email }}</td>
+                    <td><span class="badge {% if u.role == 'admin' %}bg-danger{% else %}bg-secondary{% endif %}">{{ u.role }}</span></td>
+                    <td>Band {{ u.current_band or 5.5 }}</td>
+                    <td>Target {{ u.target_band or 7.0 }}</td>
+                    <td><span class="badge {% if u.subscription == 'premium' %}bg-warning text-dark{% else %}bg-light text-dark border{% endif %}">{{ u.subscription }}</span></td>
+                    <td>
+                        <form action="{{ url_for('admin.toggle_premium', user_id=u._id) }}" method="POST" class="d-inline">
+                            <button type="submit" class="btn btn-sm {% if u.subscription == 'premium' %}btn-outline-danger{% else %}btn-outline-success{% endif %} rounded-pill">
+                                {% if u.subscription == 'premium' %}Free qilish{% else %}Premium berish{% endif %}
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

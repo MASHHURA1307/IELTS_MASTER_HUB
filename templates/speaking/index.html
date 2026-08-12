@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Speaking AI Practice — IELTS Master Hub{% endblock %}
+{% block page_title %}IELTS Speaking AI Ovozli Sinov{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h4 class="fw-bold">Speaking Savollari (Part 1, Part 2, Part 3)</h4>
+        <p class="text-muted small">Ovozingizni yozib oling va Sun'iy Intellektdan talaffuz, ravonlik va lug'at bo'yicha onlayn tahlil oling</p>
+    </div>
+
+    <div class="btn-group rounded-pill p-1 bg-body-tertiary">
+        <a href="{{ url_for('speaking.index', part='all') }}" class="btn btn-sm rounded-pill {% if current_part == 'all' %}btn-primary{% else %}btn-link text-body text-decoration-none{% endif %}">Barchasi</a>
+        <a href="{{ url_for('speaking.index', part='1') }}" class="btn btn-sm rounded-pill {% if current_part == '1' %}btn-danger{% else %}btn-link text-body text-decoration-none{% endif %}">Part 1</a>
+        <a href="{{ url_for('speaking.index', part='2') }}" class="btn btn-sm rounded-pill {% if current_part == '2' %}btn-danger{% else %}btn-link text-body text-decoration-none{% endif %}">Part 2 (Cue Card)</a>
+        <a href="{{ url_for('speaking.index', part='3') }}" class="btn btn-sm rounded-pill {% if current_part == '3' %}btn-danger{% else %}btn-link text-body text-decoration-none{% endif %}">Part 3</a>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    {% for q in questions %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card card-glass border-0 shadow-sm rounded-4 h-100 p-3 hover-lift">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="badge bg-danger-subtle text-danger rounded-pill px-3">
+                    Speaking Part {{ q.part }}
+                </span>
+                <span class="text-muted small"><i class="bi bi-mic me-1"></i> Audio yozuv</span>
+            </div>
+
+            <h5 class="fw-bold mb-2">{{ q.topic or 'Mavzu' }}</h5>
+            <p class="text-muted small flex-grow-1">{{ q.question }}</p>
+
+            <div class="pt-3 border-top mt-2">
+                <a href="{{ url_for('speaking.test_detail', question_id=q._id) }}" class="btn btn-danger btn-sm w-100 rounded-pill fw-bold">
+                    Ovozni Yozishni Boshlash <i class="bi bi-record-circle ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+        <i class="bi bi-mic text-muted display-1"></i>
+        <h5 class="mt-3 text-muted">Speaking savollari topilmadi</h5>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Past Audio Records Table -->
+<div class="card card-glass border-0 shadow-sm rounded-4 p-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-mic-fill text-danger me-2"></i> Mening Oxirgi Ovozli Yozuvlarim</h5>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Savol</th>
+                    <th>Part</th>
+                    <th>AI Band Ball</th>
+                    <th>Sana</th>
+                    <th>Harakat</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in records %}
+                <tr>
+                    <td class="fw-bold">{{ r.question_text[:50] }}...</td>
+                    <td><span class="badge bg-danger">Part {{ r.part }}</span></td>
+                    <td><span class="badge bg-danger text-white fs-6">Band {{ r.overall_band }}</span></td>
+                    <td class="text-muted small">{{ r.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        <a href="{{ url_for('speaking.result', record_id=r._id) }}" class="btn btn-sm btn-outline-danger rounded-pill">
+                            Natijani Ko'rish
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-3">Hali ovozli javoblar topshirilmagan.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

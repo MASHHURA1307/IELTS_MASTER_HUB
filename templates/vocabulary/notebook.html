@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Mening Lug'at Daftarim — IELTS Master Hub{% endblock %}
+{% block page_title %}Shaxsiy Lug'at Daftari{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Left Column: Add New Word Form -->
+    <div class="col-lg-4">
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-plus-circle-fill text-primary me-2"></i> Yangi So'z Qo'shish</h5>
+            
+            <form action="{{ url_for('vocabulary.notebook') }}" method="POST">
+                <div class="mb-3">
+                    <label class="form-label fw-medium">Inglizcha So'z</label>
+                    <input type="text" name="word" class="form-control" placeholder="Masalan: Meticulous" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-medium">O'zbekcha Tarjimasi</label>
+                    <input type="text" name="meaning" class="form-control" placeholder="Masalan: O'ta sinchkov, qunt bilan qilingan" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-medium">Misol Gap (IELTS Context)</label>
+                    <textarea name="example" class="form-control" rows="3" placeholder="Masalan: He performed a meticulous research."></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold">
+                    Daftarga Saqlash <i class="bi bi-bookmark-plus ms-1"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Column: Personal Notebook Word List -->
+    <div class="col-lg-8">
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-journal-bookmark-fill me-2 text-warning"></i> Mening Saqlangan So'zlarim ({{ notes|length }})</h5>
+
+            <div class="row g-3">
+                {% for note in notes %}
+                <div class="col-md-6">
+                    <div class="p-3 bg-body rounded-3 border">
+                        <div class="d-flex align-items-center justify-content-between mb-1">
+                            <h5 class="fw-bold text-primary m-0">{{ note.word }}</h5>
+                            <span class="badge bg-secondary-subtle text-secondary extra-small">{{ note.created_at.strftime('%d.%m.%Y') }}</span>
+                        </div>
+                        <h6 class="fw-bold text-success mb-2">{{ note.meaning }}</h6>
+                        {% if note.example %}
+                        <p class="small text-muted fst-italic m-0">"{{ note.example }}"</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="col-12 text-center py-4 text-muted">
+                    Hali shaxsiy daftaringizga so'zlar qo'shilmagan. Yon tomondagi shakl orqali birinchi so'zni qo'shing!
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

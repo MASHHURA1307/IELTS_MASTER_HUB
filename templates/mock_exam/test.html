@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Mock Exam Simulation — IELTS Master Hub{% endblock %}
+{% block page_title %}IELTS Full Simulation Exam{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card card-glass border-0 shadow-lg rounded-4 p-4 mb-4 text-center">
+            <h3 class="fw-bold text-primary mb-2">IELTS Official Full Simulation Test</h3>
+            <p class="text-muted">Barcha 4 ta bo'lim bo'yicha bilimingizni topshiring va sertifikat oling</p>
+        </div>
+
+        <form action="{{ url_for('mock_exam.submit_mock', mock_id=mock._id if mock else '65c28f1e8a9b1c2d3e4f5a6b') }}" method="POST">
+            <!-- Section 1: Listening -->
+            <div class="card card-glass border-0 shadow-sm rounded-4 p-4 mb-4 border-start border-4 border-success">
+                <h5 class="fw-bold text-success mb-3"><i class="bi bi-headphones me-2"></i> 1-Bo'lim: Listening (30 daqiqa)</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Tahminiy / To'plangan Ballingiz:</label>
+                        <select name="listening_band" class="form-select">
+                            <option value="5.5">Listening Band 5.5</option>
+                            <option value="6.0">Listening Band 6.0</option>
+                            <option value="6.5" selected>Listening Band 6.5</option>
+                            <option value="7.0">Listening Band 7.0</option>
+                            <option value="7.5">Listening Band 7.5</option>
+                            <option value="8.0">Listening Band 8.0</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Reading -->
+            <div class="card card-glass border-0 shadow-sm rounded-4 p-4 mb-4 border-start border-4 border-primary">
+                <h5 class="fw-bold text-primary mb-3"><i class="bi bi-book-half me-2"></i> 2-Bo'lim: Reading (60 daqiqa)</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Tahminiy / To'plangan Ballingiz:</label>
+                        <select name="reading_band" class="form-select">
+                            <option value="5.5">Reading Band 5.5</option>
+                            <option value="6.0">Reading Band 6.0</option>
+                            <option value="6.5" selected>Reading Band 6.5</option>
+                            <option value="7.0">Reading Band 7.0</option>
+                            <option value="7.5">Reading Band 7.5</option>
+                            <option value="8.0">Reading Band 8.0</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Writing -->
+            <div class="card card-glass border-0 shadow-sm rounded-4 p-4 mb-4 border-start border-4 border-warning">
+                <h5 class="fw-bold text-warning mb-3"><i class="bi bi-pencil-square me-2"></i> 3-Bo'lim: Writing (60 daqiqa)</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">AI / Examiner Insho Balli:</label>
+                        <select name="writing_band" class="form-select">
+                            <option value="5.5">Writing Band 5.5</option>
+                            <option value="6.0" selected>Writing Band 6.0</option>
+                            <option value="6.5">Writing Band 6.5</option>
+                            <option value="7.0">Writing Band 7.0</option>
+                            <option value="7.5">Writing Band 7.5</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Speaking -->
+            <div class="card card-glass border-0 shadow-sm rounded-4 p-4 mb-4 border-start border-4 border-danger">
+                <h5 class="fw-bold text-danger mb-3"><i class="bi bi-mic-fill me-2"></i> 4-Bo'lim: Speaking (15 daqiqa)</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">AI Ovozli Nutq Balli:</label>
+                        <select name="speaking_band" class="form-select">
+                            <option value="6.0">Speaking Band 6.0</option>
+                            <option value="6.5">Speaking Band 6.5</option>
+                            <option value="7.0" selected>Speaking Band 7.0</option>
+                            <option value="7.5">Speaking Band 7.5</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow mb-5">
+                Imtihonni Yakunlash va Sertifikat Olish <i class="bi bi-award-fill ms-1"></i>
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

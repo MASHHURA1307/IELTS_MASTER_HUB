@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}{{ prompt.title }} — Writing AI{% endblock %}
+{% block page_title %}{{ prompt.title }}{% endblock %}
+
+{% block content %}
+<!-- Timer and Controls Top Bar -->
+<div class="card card-glass border-0 shadow-sm rounded-4 p-3 mb-4 sticky-top" style="top: 70px; z-index: 100;">
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-warning text-dark rounded-pill px-3">{{ prompt.task_type }}</span>
+            <span class="fw-bold">{{ prompt.title }}</span>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <span class="badge bg-secondary rounded-pill px-3 py-2 fs-6">
+                So'z soni: <strong id="liveWordCount" class="text-warning">0</strong> ta
+            </span>
+            <div class="timer-badge bg-danger text-white px-3 py-1 rounded-pill fw-bold">
+                <i class="bi bi-stopwatch me-1"></i> <span id="writingTimer">{% if prompt.task_type == 'Task 1' %}20:00{% else %}40:00{% endif %}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Prompt Task Statement -->
+    <div class="col-lg-5">
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-4 h-100">
+            <h5 class="fw-bold border-bottom pb-3 mb-3"><i class="bi bi-file-earmark-text text-warning me-2"></i> Insho Topsahiriq Sharti</h5>
+            <div class="prompt-text fs-6 lh-lg mb-4 text-justify">
+                {{ prompt.prompt_text | replace('\n', '<br>') | safe }}
+            </div>
+            
+            {% if prompt.image_url %}
+            <div class="text-center mb-3">
+                <img src="{{ prompt.image_url }}" class="img-fluid rounded-3 border shadow-sm" alt="Task Visual">
+            </div>
+            {% endif %}
+
+            <div class="alert alert-info rounded-3 small">
+                <i class="bi bi-lightbulb-fill me-1"></i> <strong>Maslahat:</strong> 
+                {% if prompt.task_type == 'Task 1' %}
+                Kamida 150 ta so'z yozing. Grafikka ta'rif bering va asosiy o'zgarishlarni solishtiring.
+                {% else %}
+                Kamida 250 ta so'z yozing. Muqaddima, 2 ta asosiy paragraf va xulosa qismlaridan foydalaning.
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Live Essay Writing Textarea -->
+    <div class="col-lg-7">
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-4 h-100">
+            <h5 class="fw-bold border-bottom pb-3 mb-3"><i class="bi bi-pencil-square text-primary me-2"></i> Sizning Insho Matningiz</h5>
+            
+            <form action="{{ url_for('writing.submit_essay', prompt_id=prompt._id) }}" method="POST" id="essayForm">
+                <div class="mb-3">
+                    <textarea name="essay_text" id="essayTextarea" class="form-control border-secondary-subtle p-3 fs-6 lh-lg rounded-3" rows="16" placeholder="Write your essay here in English..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-warning btn-lg w-100 rounded-pill fw-bold">
+                    AI Examinerga Tekshirishga Yuborish <i class="bi bi-cpu-fill ms-1"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const textarea = document.getElementById('essayTextarea');
+    const wordCountDisplay = document.getElementById('liveWordCount');
+
+    // Live Word Counter
+    textarea.addEventListener('input', function() {
+        const text = this.value.trim();
+        const words = text ? text.split(/\s+/).length : 0;
+        wordCountDisplay.textContent = words;
+    });
+
+    // Countdown timer JS
+    let timeLimitMinutes = {% if prompt.task_type == 'Task 1' %}20{% else %}40{% endif %};
+    let totalSecs = timeLimitMinutes * 60;
+    const timerElem = document.getElementById('writingTimer');
+
+    setInterval(() => {
+        if(totalSecs > 0) {
+            totalSecs--;
+            const m = Math.floor(totalSecs / 60);
+            const s = totalSecs % 60;
+            timerElem.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+    }, 1000);
+</script>
+{% endblock %}

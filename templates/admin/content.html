@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Kontent Boshqaruvi — Admin Panel{% endblock %}
+{% block page_title %}IELTS Kontent Boshqaruvi{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- Reading Tests Column -->
+    <div class="col-lg-6">
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-4">
+            <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-book-half me-2"></i> Reading Matnlari ({{ r_tests|length }})</h5>
+            <ul class="list-group list-group-flush">
+                {% for r in r_tests %}
+                <li class="list-group-item bg-transparent px-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong class="d-block">{{ r.title }}</strong>
+                        <small class="text-muted">{{ r.difficulty }} | {{ r.questions|length }} ta savol</small>
+                    </div>
+                    <span class="badge bg-primary-subtle text-primary">Aktiv</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Writing Prompts Column -->
+    <div class="col-lg-6">
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-4">
+            <h5 class="fw-bold mb-3 text-warning"><i class="bi bi-pencil-square me-2"></i> Writing Mavzulari ({{ w_prompts|length }})</h5>
+            <ul class="list-group list-group-flush">
+                {% for w in w_prompts %}
+                <li class="list-group-item bg-transparent px-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong class="d-block">{{ w.title }}</strong>
+                        <small class="text-muted">{{ w.task_type }}</small>
+                    </div>
+                    <span class="badge bg-warning-subtle text-warning">Aktiv</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

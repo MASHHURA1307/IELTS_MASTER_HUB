@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}{{ test.title }} — Reading Test{% endblock %}
+{% block page_title %}{{ test.title }}{% endblock %}
+
+{% block content %}
+<!-- Top Timer Bar -->
+<div class="card card-glass border-0 shadow-sm rounded-4 p-3 mb-4 sticky-top" style="top: 70px; z-index: 100;">
+    <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary-subtle text-primary rounded-pill px-3">{{ test.difficulty }}</span>
+            <span class="fw-bold">{{ test.title }}</span>
+        </div>
+        
+        <div class="d-flex align-items-center gap-3">
+            <div class="timer-badge bg-danger text-white px-3 py-1 rounded-pill fw-bold" id="examTimer">
+                <i class="bi bi-stopwatch me-1"></i> <span id="timerDisplay">20:00</span>
+            </div>
+            <button type="button" class="btn btn-outline-warning btn-sm rounded-pill" id="highlightBtn" title="Matnni ajratib ko'rsatish">
+                <i class="bi bi-highlighter"></i> Highlight
+            </button>
+        </div>
+    </div>
+</div>
+
+<form action="{{ url_for('reading.submit_test', test_id=test._id) }}" method="POST" id="readingForm">
+    <input type="hidden" name="time_spent" id="timeSpentInput" value="00:00">
+    <div class="row g-4">
+        <!-- Left Side: Passage Content -->
+        <div class="col-lg-6">
+            <div class="card card-glass border-0 shadow-sm rounded-4 p-4 h-100 position-relative">
+                <h5 class="fw-bold border-bottom pb-3 mb-3">Reading Passage</h5>
+                <div class="passage-content fs-6 text-justify lh-lg" id="passageContainer" style="max-height: 70vh; overflow-y: auto;">
+                    {{ test.passage_text | replace('\n', '<br><br>') | safe }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Questions -->
+        <div class="col-lg-6">
+            <div class="card card-glass border-0 shadow-sm rounded-4 p-4 h-100" style="max-height: 70vh; overflow-y: auto;">
+                <h5 class="fw-bold border-bottom pb-3 mb-3">Questions (1 - {{ test.questions|length }})</h5>
+                
+                {% for q in test.questions %}
+                <div class="question-card mb-4 p-3 bg-body rounded-3 border">
+                    <div class="fw-bold mb-2">Q{{ loop.index }}. {{ q.question }}</div>
+                    
+                    {% if q.type == 'multiple_choice' %}
+                        {% for opt in q.options %}
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="question_{{ q.id }}" id="q_{{ q.id }}_{{ loop.index }}" value="{{ opt }}">
+                            <label class="form-check-label" for="q_{{ q.id }}_{{ loop.index }}">
+                                {{ opt }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <input type="text" name="question_{{ q.id }}" class="form-control mt-2" placeholder="Javobingizni yozing (True/False/Not Given yoki so'z)...">
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill mt-3">
+                    Testni Yakunlash va AI Baholash <i class="bi bi-send-check ms-1"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Timer Countdown JS
+    let totalSeconds = {{ (test.time_limit or 20) * 60 }};
+    const timerDisplay = document.getElementById('timerDisplay');
+    const timeSpentInput = document.getElementById('timeSpentInput');
+    let elapsedSeconds = 0;
+
+    const timerInterval = setInterval(() => {
+        totalSeconds--;
+        elapsedSeconds++;
+        const mins = Math.floor(totalSeconds / 60);
+        const secs = totalSeconds % 60;
+        timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        
+        const spentMins = Math.floor(elapsedSeconds / 60);
+        const spentSecs = elapsedSeconds % 60;
+        timeSpentInput.value = `${spentMins.toString().padStart(2, '0')}:${spentSecs.toString().padStart(2, '0')}`;
+
+        if (totalSeconds <= 0) {
+            clearInterval(timerInterval);
+            alert("Vaqt tugadi! Test avtomatik topshiriladi.");
+            document.getElementById('readingForm').submit();
+        }
+    }, 1000);
+
+    // Text Highlighter Script
+    document.getElementById('highlightBtn').addEventListener('click', function() {
+        const selection = window.getSelection();
+        if (selection.rangeCount && !selection.isCollapsed) {
+            const range = selection.getRangeAt(0);
+            const span = document.createElement('mark');
+            span.className = 'bg-warning text-dark px-1 rounded';
+            range.surroundContents(span);
+        }
+    });
+</script>
+{% endblock %}

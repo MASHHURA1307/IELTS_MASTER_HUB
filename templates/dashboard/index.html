@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — IELTS Master Hub{% endblock %}
+{% block page_title %}Mening Boshqaruv Panelim{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+    <!-- Overall Target & Current Band Card -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card card-glass border-0 shadow-sm rounded-4 h-100 p-3 position-relative overflow-hidden">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small fw-bold text-uppercase">Tahminiy IELTS Ball</span>
+                    <h2 class="display-5 fw-extrabold text-primary my-1">{{ overall_band }}</h2>
+                    <span class="badge bg-primary-subtle text-primary">Maqsad: Band {{ current_user.target_band }}</span>
+                </div>
+                <div class="band-circle-lg bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow">
+                    <i class="bi bi-award-fill fs-2"></i>
+                </div>
+            </div>
+            <div class="progress mt-3" style="height: 6px;">
+                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ (overall_band / current_user.target_band) * 100 }}%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skill Cards: Reading, Listening, Writing, Speaking -->
+    <div class="col-xl-9 col-md-6">
+        <div class="row g-3">
+            <div class="col-sm-6 col-lg-3">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-body hover-lift">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted small">Reading</span>
+                        <i class="bi bi-book-half text-primary fs-4"></i>
+                    </div>
+                    <h3 class="fw-bold m-0">Band {{ r_band }}</h3>
+                    <div class="small text-muted mt-1"><i class="bi bi-arrow-up-right text-success me-1"></i> O'rtacha natija</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-body hover-lift">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted small">Listening</span>
+                        <i class="bi bi-headphones text-success fs-4"></i>
+                    </div>
+                    <h3 class="fw-bold m-0">Band {{ l_band }}</h3>
+                    <div class="small text-muted mt-1"><i class="bi bi-arrow-up-right text-success me-1"></i> O'rtacha natija</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-body hover-lift">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted small">Writing AI</span>
+                        <i class="bi bi-pencil-square text-warning fs-4"></i>
+                    </div>
+                    <h3 class="fw-bold m-0">Band {{ w_band }}</h3>
+                    <div class="small text-muted mt-1"><i class="bi bi-robot text-warning me-1"></i> AI baholagan</div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="card border-0 shadow-sm rounded-4 p-3 bg-body hover-lift">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted small">Speaking AI</span>
+                        <i class="bi bi-mic-fill text-danger fs-4"></i>
+                    </div>
+                    <h3 class="fw-bold m-0">Band {{ s_band }}</h3>
+                    <div class="small text-muted mt-1"><i class="bi bi-robot text-danger me-1"></i> Ovozli tahlil</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Chart.js Weekly Progress -->
+    <div class="col-lg-8">
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="fw-bold m-0"><i class="bi bi-graph-up text-primary me-2"></i> Haftalik O'sish Dinamikasi</h5>
+                <span class="badge bg-secondary-subtle text-secondary">Oxirgi 7 kun</span>
+            </div>
+            <div class="chart-container" style="position: relative; height: 300px;">
+                <canvas id="weeklyProgressChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Recommendation & Today's Study Plan -->
+    <div class="col-lg-4">
+        <!-- AI Card -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-gradient-primary text-white mb-4">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-robot fs-3"></i>
+                <h6 class="fw-bold m-0">AI Mentor Tavsiyasi</h6>
+            </div>
+            <p class="small opacity-90 mb-3">{{ ai_recommendation }}</p>
+            <a href="{{ url_for('ai.chat') }}" class="btn btn-light btn-sm rounded-pill fw-bold text-primary">AI Bilan Maslahatlashish</a>
+        </div>
+
+        <!-- Today Tasks -->
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h6 class="fw-bold m-0"><i class="bi bi-check2-square text-success me-2"></i> Bugungi O'quv Rejasi</h6>
+                <a href="{{ url_for('planner.index') }}" class="small text-decoration-none">Barchasi</a>
+            </div>
+            <ul class="list-group list-group-flush" id="todayTasksList">
+                {% for task in today_tasks %}
+                <li class="list-group-item bg-transparent border-0 px-0 d-flex align-items-center justify-content-between">
+                    <div class="form-check">
+                        <input class="form-check-input task-checkbox" type="checkbox" data-task-id="{{ task.id }}" id="task_{{ task.id }}" {% if task.done %}checked{% endif %}>
+                        <label class="form-check-label small {% if task.done %}text-decoration-line-through text-muted{% endif %}" for="task_{{ task.id }}">
+                            {{ task.title }}
+                        </label>
+                    </div>
+                    <span class="badge bg-secondary-subtle text-secondary small">{{ task.type }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recent Activities Timeline -->
+    <div class="col-lg-6">
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-4">
+            <h5 class="fw-bold mb-3"><i class="bi bi-clock-history me-2"></i> Oxirgi Amaliyotlar</h5>
+            {% if activities %}
+            <div class="timeline">
+                {% for act in activities %}
+                <div class="d-flex align-items-start gap-3 mb-3 border-bottom pb-2">
+                    <div class="badge bg-primary-subtle text-primary p-2 rounded-circle">
+                        <i class="bi bi-lightning-fill fs-6"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="fw-bold small">{{ act.title }}</div>
+                        <div class="text-muted small">{{ act.details }}</div>
+                    </div>
+                    <span class="text-muted extra-small">{{ act.timestamp.strftime('%H:%M') }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-muted small text-center my-4">Hozircha amaliyotlar yo'q. Birinchi testni topshiring!</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Upcoming Mock Exam Reminder -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 p-4 bg-primary-subtle border-start border-4 border-primary">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <h5 class="fw-bold text-primary mb-1"><i class="bi bi-file-earmark-text me-2"></i> IELTS Full Mock Simulation</h5>
+                    <p class="text-muted small mb-3">Haqiqiy IELTS imtihon muhitini his qiling va to'liq sertifikat oling.</p>
+                    <a href="{{ url_for('mock_exam.index') }}" class="btn btn-primary rounded-pill px-4">Mock Exam Topshirish</a>
+                </div>
+                <div class="d-none d-sm-block text-primary display-4">
+                    <i class="bi bi-award"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% endblock %}

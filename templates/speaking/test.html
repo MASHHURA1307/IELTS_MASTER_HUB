@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Speaking Part {{ question.part }} — IELTS Master Hub{% endblock %}
+{% block page_title %}Speaking Part {{ question.part }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Question Cue Card -->
+        <div class="card card-glass border-0 shadow-lg rounded-4 p-4 mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="badge bg-danger rounded-pill px-3 fs-6">Speaking Part {{ question.part }}</span>
+                <span class="text-muted small"><i class="bi bi-info-circle me-1"></i> Tavsiyaviy vaqt: 1-2 daqiqa</span>
+            </div>
+
+            <h4 class="fw-bold mb-3 text-danger">{{ question.question }}</h4>
+            
+            {% if question.bullet_points %}
+            <div class="p-3 bg-body-tertiary rounded-3 border mb-3">
+                <strong class="text-muted d-block mb-2">Quyidagi jihatlarni qamrab oling:</strong>
+                <ul class="mb-0 ps-3 text-muted">
+                    {% for bp in question.bullet_points %}
+                    <li>{{ bp }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Audio Recorder Control Box -->
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-4 text-center">
+            <h5 class="fw-bold mb-4"><i class="bi bi-mic-fill text-danger me-2"></i> Ovozingizni Yozib Oling</h5>
+            
+            <div class="recording-visualizer mb-4">
+                <div class="display-3 fw-bold text-danger my-2" id="recTimer">00:00</div>
+                <div class="small text-muted" id="recStatus">Tugmani bosib yozishni boshlang</div>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3 mb-4">
+                <button type="button" class="btn btn-danger btn-lg rounded-circle p-3 shadow" id="startRecBtn" style="width: 70px; height: 70px;">
+                    <i class="bi bi-mic-fill fs-2"></i>
+                </button>
+                <button type="button" class="btn btn-secondary btn-lg rounded-circle p-3 shadow d-none" id="stopRecBtn" style="width: 70px; height: 70px;">
+                    <i class="bi bi-stop-fill fs-2"></i>
+                </button>
+            </div>
+
+            <div class="mb-4 d-none" id="audioPreviewContainer">
+                <h6 class="fw-bold mb-2 text-muted">Yozib olingan audio:</h6>
+                <audio id="audioPlayback" controls class="w-100 rounded-pill shadow-sm"></audio>
+            </div>
+
+            <form action="{{ url_for('speaking.submit_speech', question_id=question._id) }}" method="POST" enctype="multipart/form-data" id="speakingForm">
+                <div class="mb-3">
+                    <label class="form-label text-muted small fw-bold">Javobingiz matni (Transkript - ixtiyoriy):</label>
+                    <textarea name="transcript" id="transcriptTextarea" class="form-control border-secondary-subtle" rows="4" placeholder="Javobingiz so'zlarini yozishingiz ham mumkin..."></textarea>
+                </div>
+                
+                <input type="file" name="audio_data" id="audioFileInput" class="d-none">
+
+                <button type="submit" class="btn btn-danger btn-lg w-100 rounded-pill fw-bold">
+                    AI Examinerga Baholatishga Yuborish <i class="bi bi-cpu-fill ms-1"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/recorder.js') }}"></script>
+{% endblock %}

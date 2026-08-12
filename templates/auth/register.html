@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Ro'yxatdan O'tish — IELTS Master Hub{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-75">
+    <div class="col-md-6 col-lg-5">
+        <div class="card card-glass shadow-lg border-0 rounded-4">
+            <div class="card-body p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-success-subtle text-success rounded-circle mb-3" style="width: 60px; height: 60px;">
+                        <i class="bi bi-person-plus-fill fs-2"></i>
+                    </div>
+                    <h3 class="fw-bold">Ro'yxatdan O'tish</h3>
+                    <p class="text-muted small">Bepul hisob yarating va AI mentor bilan IELTS topshirishni boshlang</p>
+                </div>
+
+                <form action="{{ url_for('auth.register') }}" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Ism va Familiyangiz</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-body-tertiary"><i class="bi bi-person"></i></span>
+                            <input type="text" name="full_name" class="form-control" placeholder="Alisher Navoiy" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Email Manzil</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-body-tertiary"><i class="bi bi-envelope"></i></span>
+                            <input type="email" name="email" class="form-control" placeholder="alisher@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Maqsad Qilingan IELTS Balli (Target Band)</label>
+                        <select name="target_band" class="form-select">
+                            <option value="6.0">Band 6.0</option>
+                            <option value="6.5">Band 6.5</option>
+                            <option value="7.0" selected>Band 7.0 (Tavsiya etiladi)</option>
+                            <option value="7.5">Band 7.5</option>
+                            <option value="8.0">Band 8.0</option>
+                            <option value="8.5">Band 8.5</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-medium">Parol</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-body-tertiary"><i class="bi bi-key"></i></span>
+                            <input type="password" name="password" class="form-control" placeholder="Kamida 6 belgi" minlength="6" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill mb-3">
+                        Hisob Yaratish <i class="bi bi-check-circle-fill ms-1"></i>
+                    </button>
+                </form>
+
+                <div class="text-center mt-4 pt-3 border-top">
+                    <span class="text-muted small">Allaqachon hisobingiz bormi?</span>
+                    <a href="{{ url_for('auth.login') }}" class="fw-bold text-decoration-none ms-1">Tizimga kiring</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

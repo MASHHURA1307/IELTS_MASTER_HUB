@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Premium Obuna — IELTS Master Hub{% endblock %}
+{% block page_title %}Premium Obuna Va Tariflar{% endblock %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <h2 class="fw-bold">Barcha Cheklovlarni Oling va Band 7.5+ Ga Eashing!</h2>
+    <p class="text-muted">Cheksiz AI Insho tekshiruvi, AI Speaking ovozli tahlil, PDF sertifikatlar va shaxsiy mentorlik</p>
+</div>
+
+<div class="row g-4 justify-content-center">
+    <!-- Free Tier Card -->
+    <div class="col-md-5 col-lg-4">
+        <div class="card card-glass border-0 shadow-sm rounded-4 p-4 text-center h-100">
+            <h4 class="fw-bold">Bepul (Free)</h4>
+            <div class="my-3">
+                <span class="display-4 fw-bold">0</span> <span class="text-muted">UZS / oy</span>
+            </div>
+            <ul class="list-group list-group-flush text-start small mb-4">
+                <li class="list-group-item bg-transparent px-0"><i class="bi bi-check-circle-fill text-success me-2"></i> Kuniga 2 ta Reading test</li>
+                <li class="list-group-item bg-transparent px-0"><i class="bi bi-check-circle-fill text-success me-2"></i> Kuniga 2 ta Listening mashq</li>
+                <li class="list-group-item bg-transparent px-0 text-muted"><i class="bi bi-x-circle me-2"></i> Cheklangan AI Writing Insho tekshiruvi</li>
+                <li class="list-group-item bg-transparent px-0 text-muted"><i class="bi bi-x-circle me-2"></i> Cheklangan AI Speaking Ovozli Tekshiruv</li>
+                <li class="list-group-item bg-transparent px-0 text-muted"><i class="bi bi-x-circle me-2"></i> PDF Sertifikat Yuklab Olish</li>
+            </ul>
+            <button class="btn btn-outline-secondary rounded-pill w-100 mt-auto" disabled>Hozirgi Tarif</button>
+        </div>
+    </div>
+
+    <!-- Premium Tier Card -->
+    <div class="col-md-5 col-lg-4">
+        <div class="card border-0 shadow-lg rounded-4 p-4 text-center h-100 bg-gradient-primary text-white position-relative">
+            <span class="badge bg-warning text-dark rounded-pill px-3 py-2 position-absolute top-0 end-0 m-3 fw-bold">TAVSIYA ETILADI</span>
+            <h4 class="fw-bold">Premium VIP</h4>
+            <div class="my-3">
+                <span class="display-4 fw-bold">99 000</span> <span class="opacity-75">UZS / oy</span>
+            </div>
+            <ul class="list-group list-group-flush text-start small mb-4 text-white">
+                <li class="list-group-item bg-transparent px-0 text-white"><i class="bi bi-check-circle-fill text-warning me-2"></i> Cheksiz Reading va Listening testlar</li>
+                <li class="list-group-item bg-transparent px-0 text-white"><i class="bi bi-check-circle-fill text-warning me-2"></i> <strong>Cheksiz Writing AI Examiner</strong></li>
+                <li class="list-group-item bg-transparent px-0 text-white"><i class="bi bi-check-circle-fill text-warning me-2"></i> <strong>Cheksiz Speaking AI Ovozli Tahlil</strong></li>
+                <li class="list-group-item bg-transparent px-0 text-white"><i class="bi bi-check-circle-fill text-warning me-2"></i> <strong>To'liq Mock Exam va PDF Sertifikatlar</strong></li>
+                <li class="list-group-item bg-transparent px-0 text-white"><i class="bi bi-check-circle-fill text-warning me-2"></i> Shaxsiy AI Mentor 24/7 yordami</li>
+            </ul>
+
+            <form action="{{ url_for('subscription.upgrade') }}" method="POST" class="mt-auto">
+                <input type="hidden" name="plan_type" value="premium_monthly">
+                <button type="submit" class="btn btn-light btn-lg rounded-pill w-100 text-primary fw-bold">
+                    Premium Obuna Bo'lish (Payme / Click) <i class="bi bi-arrow-right ms-1"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

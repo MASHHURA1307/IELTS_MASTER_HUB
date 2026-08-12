@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}500 Xatolik — IELTS Master Hub{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-75 text-center">
+    <div class="col-md-6">
+        <div class="display-1 fw-extrabold text-danger mb-3">500</div>
+        <h3 class="fw-bold mb-2">Tizimda Xatolik Yuz Berdi</h3>
+        <p class="text-muted mb-4">Serverda texnik xatolik yuz berdi. Dasturchilarimiz muammoni hal qilishmoqda.</p>
+        <a href="{{ url_for('dashboard.index') }}" class="btn btn-primary rounded-pill px-5">Bosh Sahifaga Qaytish</a>
+    </div>
+</div>
+{% endblock %}

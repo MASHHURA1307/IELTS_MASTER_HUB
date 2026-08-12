@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Vocabulary Quiz — IELTS Master Hub{% endblock %}
+{% block page_title %}Lug'at Bo'yicha Test Sinovi{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card card-glass border-0 shadow-lg rounded-4 p-4 mb-4">
+            <h4 class="fw-bold mb-4 border-bottom pb-3"><i class="bi bi-patch-question-fill text-warning me-2"></i> Lug'at Bilimini Tekshirish</h4>
+
+            {% for item in quiz_data %}
+            <div class="quiz-question-block mb-4 p-4 bg-body rounded-4 border" id="quiz_q_{{ loop.index }}">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="badge bg-primary rounded-pill">Savol {{ loop.index }} / {{ quiz_data|length }}</span>
+                    <span class="text-muted small">{{ item.phonetic }}</span>
+                </div>
+                
+                <h3 class="fw-bold text-primary mb-3">{{ item.word }}</h3>
+                <p class="text-muted small mb-3">Ushbu so'zning O'zbekcha to'g'ri ma'nosini tanlang:</p>
+
+                <div class="row g-2">
+                    {% for opt in item.options %}
+                    <div class="col-md-6">
+                        <button type="button" class="btn btn-outline-secondary w-100 p-3 text-start quiz-option-btn rounded-3" data-correct="{{ item.correct_meaning }}" data-val="{{ opt }}">
+                            {{ opt }}
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="text-center">
+                <a href="{{ url_for('vocabulary.index') }}" class="btn btn-primary rounded-pill px-5">Barchasini Yakunlash va Qaytish</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.querySelectorAll('.quiz-option-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const parent = this.closest('.quiz-question-block');
+            const selected = this.getAttribute('data-val');
+            const correct = this.getAttribute('data-correct');
+
+            parent.querySelectorAll('.quiz-option-btn').forEach(b => b.disabled = true);
+
+            if (selected === correct) {
+                this.classList.remove('btn-outline-secondary');
+                this.classList.add('btn-success', 'text-white');
+            } else {
+                this.classList.remove('btn-outline-secondary');
+                this.classList.add('btn-danger', 'text-white');
+
+                // Highlight correct
+                parent.querySelectorAll('.quiz-option-btn').forEach(b => {
+                    if (b.getAttribute('data-val') === correct) {
+                        b.classList.remove('btn-outline-secondary');
+                        b.classList.add('btn-success', 'text-white');
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}
