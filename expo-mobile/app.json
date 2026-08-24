@@ -1,0 +1,14 @@
+{
+  "expo": {
+    "name": "IELTS Mobile Test",
+    "slug": "ielts-mobile-test",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "android": {
+      "package": "com.example.ieltsmobiletest",
+      "usesCleartextTraffic": true
+    },
+    "plugins": []
+  }
+}

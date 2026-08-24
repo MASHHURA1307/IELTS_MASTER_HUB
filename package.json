@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "babel-preset-expo": "^57.0.7"
+  }
+}

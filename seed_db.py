@@ -3,11 +3,18 @@ from werkzeug.security import generate_password_hash
 from datetime import datetime
 from config import Config
 
-def seed():
-    print("Connecting to MongoDB for database seeding...")
-    client = MongoClient(Config.MONGO_URI, serverSelectionTimeoutMS=5000)
-    db_name = Config.MONGO_URI.split("/")[-1].split("?")[0] or "ielts_master_hub"
-    db = client[db_name]
+def seed(db=None):
+    if db is None:
+        print("Connecting to MongoDB for database seeding...")
+        # Since mongomock scheme isn't supported by pymongo directly, we handle it
+        if "mongomock://" in Config.MONGO_URI:
+            import mongomock
+            client = mongomock.MongoClient()
+        else:
+            client = MongoClient(Config.MONGO_URI, serverSelectionTimeoutMS=5000)
+        db_name = Config.MONGO_URI.split("/")[-1].split("?")[0] or "ielts_master_hub"
+        db = client[db_name]
+
 
     print("Seeding Users...")
     db.users.delete_many({})

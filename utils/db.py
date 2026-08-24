@@ -5,13 +5,41 @@ from datetime import datetime, date
 from werkzeug.security import generate_password_hash
 import logging
 
+# Try to import mongomock as a fallback, but don't fail if it's not available
 try:
     import mongomock
-except Exception:  # pragma: no cover - optional dependency
+except Exception:
     mongomock = None
 
 mongo_client = None
 db = None
+
+
+def _use_mongomock_fallback(db_name, logger=None):
+    """Try to use mongomock as fallback, or return None if not available."""
+    global mongo_client, db
+    
+    if mongomock is None:
+        msg = (
+            "MongoDB connection failed and mongomock is not available. "
+            "Install mongomock with: pip install mongomock>=4.0"
+        )
+        if logger:
+            logger.error(msg)
+        db = None
+        return False
+
+    try:
+        mongo_client = mongomock.MongoClient()
+        db = mongo_client[db_name]
+        if logger:
+            logger.warning(f"MongoDB connection failed; falling back to in-memory mongomock database: {db_name}")
+        return True
+    except Exception as e:
+        if logger:
+            logger.error(f"Failed to initialize mongomock: {e}")
+        db = None
+        return False
 
 
 def _seed_default_users_if_needed():
@@ -21,47 +49,34 @@ def _seed_default_users_if_needed():
 
     try:
         if db.users.count_documents({}) == 0:
-            db.users.insert_many([
-                {
-                    "full_name": "Admin Manager",
-                    "email": "admin@ielts.uz",
-                    "password_hash": generate_password_hash("admin123"),
-                    "target_band": 8.0,
-                    "current_band": 8.0,
-                    "subscription": "premium",
-                    "role": "admin",
-                    "created_at": datetime.utcnow(),
-                    "streak": 15,
-                    "last_login_date": datetime.utcnow().strftime("%Y-%m-%d"),
-                    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=admin@ielts.uz"
-                },
-                {
-                    "full_name": "Bekzod Rahimov",
-                    "email": "user@ielts.uz",
-                    "password_hash": generate_password_hash("user123"),
-                    "target_band": 7.0,
-                    "current_band": 6.5,
-                    "subscription": "free",
-                    "role": "user",
-                    "created_at": datetime.utcnow(),
-                    "streak": 5,
-                    "last_login_date": datetime.utcnow().strftime("%Y-%m-%d"),
-                    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=user@ielts.uz"
-                }
-            ])
+            import sys
+            import os
+            # Ensure the root directory is in sys.path so we can import seed_db
+            root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+            if root_dir not in sys.path:
+                sys.path.insert(0, root_dir)
+            from seed_db import seed
+            seed(db)
     except Exception as e:
-        logging.getLogger(__name__).warning(f"Unable to seed default users: {e}")
+        logging.getLogger(__name__).warning(f"Unable to seed database: {e}")
 
 
 def init_db(app):
     global mongo_client, db
+    db_name = "ielts_master_hub"
     try:
         mongo_uri = app.config.get("MONGO_URI", "mongodb://localhost:27017/ielts_master_hub")
         db_name = mongo_uri.rstrip("/").split("/")[-1].split("?")[0] or "ielts_master_hub"
         if not db_name:
             db_name = "ielts_master_hub"
 
-        if "mongodb+srv" in mongo_uri.lower() or "mongodb://" in mongo_uri.lower():
+        if "mongomock://" in mongo_uri.lower():
+            if mongomock is None:
+                raise RuntimeError("mongomock:// URI requested but mongomock is not installed. Install with: pip install mongomock")
+            mongo_client = mongomock.MongoClient()
+            db = mongo_client[db_name]
+            app.logger.info(f"Using in-memory MongoDB (mongomock) for {db_name}")
+        elif "mongodb+srv" in mongo_uri.lower() or "mongodb://" in mongo_uri.lower():
             mongo_client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
             db = mongo_client[db_name]
             db.list_collection_names()
@@ -70,11 +85,9 @@ def init_db(app):
             raise ValueError("Unsupported MongoDB URI")
     except Exception as e:
         app.logger.error(f"Error connecting to MongoDB: {e}")
-        if mongomock is not None:
-            mongo_client = mongomock.MongoClient()
-            db = mongo_client[db_name]
-            app.logger.warning(f"Falling back to in-memory MongoDB for {db_name}")
-        else:
+        fallback_ok = _use_mongomock_fallback(db_name, logger=app.logger)
+        if not fallback_ok:
+            app.logger.error(f"Fallback to mongomock also failed. Install mongomock: pip install mongomock")
             db = None
 
     if db is not None:
@@ -86,17 +99,26 @@ def get_db():
     if db is None:
         from config import Config
         try:
-            mongo_client = MongoClient(Config.MONGO_URI, serverSelectionTimeoutMS=3000)
-            db_name = Config.MONGO_URI.rstrip("/").split("/")[-1].split("?")[0] or "ielts_master_hub"
-            db = mongo_client[db_name]
-            db.list_collection_names()
-        except Exception as e:
-            if mongomock is not None:
+            mongo_uri = Config.MONGO_URI
+            db_name = mongo_uri.rstrip("/").split("/")[-1].split("?")[0] or "ielts_master_hub"
+
+            if "mongomock://" in mongo_uri.lower():
+                if mongomock is None:
+                    raise RuntimeError("mongomock:// URI requested but mongomock is not installed. Install with: pip install mongomock")
                 mongo_client = mongomock.MongoClient()
-                db_name = Config.MONGO_URI.rstrip("/").split("/")[-1].split("?")[0] or "ielts_master_hub"
                 db = mongo_client[db_name]
             else:
-                raise RuntimeError(f"Unable to initialize MongoDB: {e}") from e
+                mongo_client = MongoClient(mongo_uri, serverSelectionTimeoutMS=3000)
+                db = mongo_client[db_name]
+                db.list_collection_names()
+        except Exception as e:
+            db_name = "ielts_master_hub"
+            fallback_ok = _use_mongomock_fallback(db_name)
+            if not fallback_ok:
+                raise RuntimeError(
+                    f"Cannot connect to MongoDB and mongomock fallback is unavailable. "
+                    f"Original error: {e}. Install mongomock with: pip install mongomock"
+                ) from e
     if db is not None:
         _seed_default_users_if_needed()
     return db
@@ -125,10 +147,13 @@ class User(UserMixin):
         self.avatar = self.doc.get("avatar", "")
 
     def is_admin(self):
-        return self.role == "admin"
+        return self.role in ["admin", "super_admin"]
+
+    def is_super_admin(self):
+        return self.role == "super_admin"
 
     def is_premium(self):
-        return self.subscription == "premium" or self.role == "admin"
+        return self.subscription == "premium" or self.role in ["admin", "super_admin"]
 
     @staticmethod
     def get_by_id(user_id):

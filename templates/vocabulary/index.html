@@ -30,7 +30,7 @@
         <span class="badge bg-primary rounded-pill px-3">{{ learned_count }} / {{ total_count }} ta so'z</span>
     </div>
     <div class="progress" style="height: 10px;">
-        <div class="progress-bar bg-success" role="progressbar" style="width: {{ (learned_count / max(1, total_count)) * 100 }}%;"></div>
+        <div class="progress-bar bg-success" role="progressbar" style="width: {{ (learned_count / (total_count if total_count > 0 else 1)) * 100 }}%;"></div>
     </div>
 </div>
 
@@ -41,7 +41,7 @@
             <div class="d-flex align-items-center justify-content-between mb-2">
                 <span class="badge bg-secondary-subtle text-secondary rounded-pill">{{ word.topic or 'Academic' }}</span>
                 <button type="button" class="btn btn-sm btn-link text-warning p-0 toggle-learned-btn" data-word-id="{{ word._id }}">
-                    {% if str(word._id) in learned_ids %}
+                    {% if (word._id | string) in learned_ids %}
                     <i class="bi bi-star-fill fs-5"></i>
                     {% else %}
                     <i class="bi bi-star fs-5"></i>

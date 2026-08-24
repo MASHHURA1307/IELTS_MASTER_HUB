@@ -36,7 +36,7 @@
             <div class="d-flex align-items-center justify-content-between pt-3 border-top mt-2">
                 <span class="small text-muted"><i class="bi bi-question-circle me-1"></i> {{ test.questions|length }} ta savol</span>
                 
-                {% if str(test._id) in completed_ids %}
+                {% if (test._id | string) in completed_ids %}
                 <a href="{{ url_for('reading.test_detail', test_id=test._id) }}" class="btn btn-outline-success btn-sm rounded-pill">
                     <i class="bi bi-check-circle-fill me-1"></i> Qayta topshirish
                 </a>

@@ -1,14 +1,20 @@
 import os
 from flask import Flask, render_template, redirect, url_for
-from flask_login import LoginManager
+from flask_login import LoginManager, current_user
 from config import Config
 from utils.db import init_db, User
 from utils.helpers import format_uzbek_date
-from datetime import datetime
+from datetime import datetime, timezone
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+
+    @app.route('/')
+    def index():
+        if current_user.is_authenticated:
+            return redirect(url_for('dashboard.index'))
+        return redirect(url_for('auth.login'))
 
     # Ensure required directories exist
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -36,7 +42,7 @@ def create_app():
     @app.context_processor
     def inject_global_vars():
         return {
-            'now': datetime.utcnow() if 'datetime' in globals() else None
+            'now': datetime.now(timezone.utc) if 'datetime' in globals() else None
         }
 
     # Register Blueprints

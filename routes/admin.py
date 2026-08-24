@@ -15,6 +15,16 @@ def admin_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def super_admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated or not current_user.is_super_admin():
+            flash("Ushbu amaliyot uchun Super Admin huquqi talab etiladi!", "danger")
+            return redirect(url_for('admin.index'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 @admin_bp.route('/')
 @login_required
 @admin_required
@@ -51,7 +61,7 @@ def users_list():
 
 @admin_bp.route('/users/toggle-premium/<user_id>', methods=['POST'])
 @login_required
-@admin_required
+@super_admin_required
 def toggle_premium(user_id):
     db = get_db()
     obj_id = to_object_id(user_id)
@@ -79,3 +89,46 @@ def content_management():
         w_prompts=w_prompts,
         s_questions=s_questions
     )
+
+@admin_bp.route('/content/reading/add', methods=['GET', 'POST'])
+@login_required
+@super_admin_required
+def add_reading():
+    if request.method == 'POST':
+        db = get_db()
+        title = request.form.get('title')
+        difficulty = request.form.get('difficulty')
+        passage_text = request.form.get('passage_text')
+        
+        new_test = {
+            "title": title,
+            "difficulty": difficulty,
+            "passage_text": passage_text,
+            "questions": [] # soddalashtirilgan
+        }
+        db.reading_tests.insert_one(new_test)
+        flash("Yangi Reading testi muvaffaqiyatli qo'shildi!", "success")
+        return redirect(url_for('admin.content_management'))
+        
+    return render_template('admin/add_reading.html')
+
+@admin_bp.route('/content/writing/add', methods=['GET', 'POST'])
+@login_required
+@super_admin_required
+def add_writing():
+    if request.method == 'POST':
+        db = get_db()
+        title = request.form.get('title')
+        task_type = request.form.get('task_type')
+        prompt_text = request.form.get('prompt_text')
+        
+        new_prompt = {
+            "title": title,
+            "task_type": task_type,
+            "prompt_text": prompt_text
+        }
+        db.writing_prompts.insert_one(new_prompt)
+        flash("Yangi Writing mavzusi muvaffaqiyatli qo'shildi!", "success")
+        return redirect(url_for('admin.content_management'))
+        
+    return render_template('admin/add_writing.html')

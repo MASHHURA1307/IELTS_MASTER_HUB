@@ -4,9 +4,14 @@ from dotenv import load_dotenv
 load_dotenv(override=True)
 
 class Config:
-    SECRET_KEY = os.getenv("SECRET_KEY", "ielts_master_hub_default_secret_key")
+    SECRET_KEY = os.getenv("SECRET_KEY") or os.getenv("secret-key") or "ielts_master_hub_default_secret_key"
     MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/ielts_master_hub")
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+    
+    # Flask URL building configuration
+    SERVER_NAME = os.getenv("SERVER_NAME", "127.0.0.1:5000")
+    APPLICATION_ROOT = "/"
+    PREFERRED_URL_SCHEME = "http"
     
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
     UPLOAD_FOLDER = os.path.join(BASE_DIR, os.getenv("UPLOAD_FOLDER", "uploads"))
