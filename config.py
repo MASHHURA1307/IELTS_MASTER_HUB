@@ -17,9 +17,11 @@ class Config:
     if os.getenv("VERCEL") == "1":
         UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "/tmp/uploads")
         REPORT_FOLDER = os.getenv("REPORT_FOLDER", "/tmp/reports")
+        MONGO_URI = os.getenv("MONGO_URI", "mongomock://localhost/ielts_master_hub")
     else:
         UPLOAD_FOLDER = os.path.join(BASE_DIR, os.getenv("UPLOAD_FOLDER", "uploads"))
         REPORT_FOLDER = os.path.join(BASE_DIR, os.getenv("REPORT_FOLDER", "reports"))
+        MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017/ielts_master_hub")
     
     MAX_CONTENT_LENGTH = int(os.getenv("MAX_CONTENT_LENGTH", 16 * 1024 * 1024)) # 16 MB max
     ALLOWED_AUDIO_EXTENSIONS = {'mp3', 'wav', 'm4a', 'ogg', 'webm'}
