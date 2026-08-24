@@ -17,8 +17,14 @@ def create_app():
         return redirect(url_for('auth.login'))
 
     # Ensure required directories exist
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    os.makedirs(app.config['REPORT_FOLDER'], exist_ok=True)
+    try:
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        os.makedirs(app.config['REPORT_FOLDER'], exist_ok=True)
+    except OSError:
+        app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
+        app.config['REPORT_FOLDER'] = '/tmp/reports'
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        os.makedirs(app.config['REPORT_FOLDER'], exist_ok=True)
 
     # Initialize Database
     init_db(app)
