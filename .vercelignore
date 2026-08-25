@@ -1,0 +1,13 @@
+expo-mobile
+node_modules
+package.json
+package-lock.json
+.git
+tests
+tmp_smoke_test.py
+__pycache__
+*.pyc
+.cursor
+.venv
+.venv-1
+.venv-2

@@ -1,20 +1,28 @@
 import os
 from flask import Flask, render_template, redirect, url_for
 from flask_login import LoginManager, current_user
+from werkzeug.middleware.proxy_fix import ProxyFix
 from config import Config
 from utils.db import init_db, User
 from utils.helpers import format_uzbek_date
+from utils.vercel_wsgi import vercel_path_fix
 from datetime import datetime, timezone
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
+    app.wsgi_app = vercel_path_fix(app.wsgi_app)
 
     @app.route('/')
     def index():
         if current_user.is_authenticated:
             return redirect(url_for('dashboard.index'))
         return redirect(url_for('auth.login'))
+
+    @app.route('/favicon.ico')
+    def favicon():
+        return "", 204
 
     # Ensure required directories exist
     try:
